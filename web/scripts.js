@@ -31,47 +31,16 @@ $(document).ready(function () {
         $pair.find('.pair-with-suggest-value').val(suggest)
     })
 
-    $(document).on('keydown', 'input.input-multiline', function(e) {
-        // Проверяем, нажаты ли Shift + Enter
-        if (e.shiftKey && (e.key === 'Enter' || e.keyCode === 13)) {
-            // e.preventDefault(); // Предотвращаем стандартное поведение
-
-            let $input = $(this);
-            let cursorPos = this.selectionStart; // Получаем позицию курсора
-
-            // Создаём новый textarea с теми же классами и значением
-            let $textarea = $('<textarea></textarea>')
-                .attr('class', $input.attr('class') + ' overflow-x-scroll overflow-y-auto text-nowrap')
-                .attr('rows', 3)
-                .attr('id', $input.id)
-                .attr('name', $input.attr('name'))
-                .prop('required', $input.prop('required'))
-                .val($input.val());
-
-            // Вставляем textarea после input
-            $textarea.insertAfter($input);
-
-            // Заменяем input на textarea
-            $input.remove();
-
-            // Устанавливаем фокус на textarea и восстанавливаем позицию курсора
-            $textarea.focus();
-            if ($textarea[0].setSelectionRange) {
-                $textarea[0].setSelectionRange(cursorPos, cursorPos);
-            } else if ($textarea[0].createTextRange) { // Для IE
-                let range = $textarea[0].createTextRange();
-                range.collapse(true);
-                range.moveEnd('character', cursorPos);
-                range.moveStart('character', cursorPos);
-                range.select();
-            }
-        }
-    })
-
-    $(document).on('input', 'textarea.textarea-autosize', function() {
+    $(document).on('input', 'textarea.record-textarea.autosize', function() {
         this.style.height = 'auto';
-        this.style.height = this.scrollHeight + 'px';
-    })
+        this.style.height = Math.max(this.scrollHeight, 20) + 'px'; // min ~1 строка
+    });
+
+    // Инициализация при загрузке
+    $('textarea.record-textarea.autosize').each(function() {
+        this.style.height = 'auto';
+        this.style.height = Math.max(this.scrollHeight, 20) + 'px';
+    });
 
     $('textarea.textarea-autosize').each(function() {
         this.style.height = 'auto';
