@@ -23,7 +23,7 @@ $this->layout('project_layout', ['request' => $request, 'title' => 'Getting star
     </li>
     <li>
         <span class="badge text-bg-warning">Required</span>
-        <a href="<?=$route('glossary/common')?>">Create common glossary</a> in <code>📜 Glossary -> 📗 Common</code>.
+        <a href="<?=$route('glossary/primary')?>">Create common glossary</a> in <code>📜 Glossary -> 📗 Common</code>.
         Describe your application summary and add app-specific terminology. You can fill glossary in your primary language
         only (or with secondary) and save it. After that, you can click on <code>Add language button</code> for automatic
         translation to selected language
