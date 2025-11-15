@@ -127,6 +127,47 @@ $(document).ready(function () {
         const $group = $a.closest(".record-input-group");
         const $form = $a.closest(".record-input-form");
         const $target = $group.length > 0 ? $group : $form;
+
+        // Проверить, не активирована ли уже обработка для этого блока
+        if ($target.data('_llmProcessing')) {
+            console.log('Запрос к LLM для этого блока уже обрабатывается.');
+            return;
+        }
+
+        // Установить флаг обработки
+        $target.data('_llmProcessing', true);
+
+        // Создаем элемент индикатора загрузки
+        const $loadingIndicator = $('<div></div>');
+        $loadingIndicator.addClass('llm-loading-indicator');
+        $loadingIndicator.html('<div class="d-flex flex-column align-items-center justify-content-center"><div class="spinner-border spinner-border-sm text-primary me-2" role="status"><span class="visually-hidden">Loading...</span></div><span class="mt-1">Processing...</span></div>');
+
+        // Стили для индикатора
+        $loadingIndicator.css({
+            'position': 'absolute',
+            'display': 'flex',
+            'justifyContent': 'center',
+            'alignItems': 'center',
+            'width': '100%',
+            'height': '100%',
+            'top': '0',
+            'left': '0',
+            'backgroundColor': 'rgba(255, 255, 255, 0.8)',
+            'color': '#007bff',
+            'fontSize': '14px',
+            'fontWeight': 'bold',
+            'zIndex': '10',
+            'pointerEvents': 'none'
+        });
+
+        // Добавляем индикатор к $target
+        const currentPos = $target.css('position');
+        if (currentPos === 'static') {
+            $target.css('position', 'relative');
+        }
+        $target.append($loadingIndicator);
+
+        // Остальная логика старого кода с сохранением поведения
         $target.addClass('opacity-50');
         $('fieldset.record-input-fieldset').prop('disabled', true);
 
@@ -151,6 +192,10 @@ $(document).ready(function () {
                 alert('There was an error when handling LLM task. Please try again.');
             },
             complete: function () {
+                // Удалить индикатор прогресса и снять флаг обработки
+                $target.find('.llm-loading-indicator').remove();
+                $target.removeData('_llmProcessing');
+
                 $('fieldset.record-input-fieldset').prop('disabled', false);
             }
         });
