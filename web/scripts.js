@@ -276,4 +276,46 @@ $(document).ready(function () {
         });
     });
 
+    (function() { // Используем IIFE, чтобы изолировать переменные
+        const modal = document.getElementById('confirmSubmitModal');
+        const modalBodyMessage = document.getElementById('confirmSubmitMessage');
+        const confirmBtn = document.getElementById('confirmSubmitBtn');
+        let formToSubmit = null;
+
+        // Обработчик отправки формы с классом 'submit-confirmation-modal' (делегирование)
+        document.addEventListener('submit', function(e) {
+            if (e.target.closest('form.submit-confirmation-modal')) { // Проверяем, является ли элемент или его родитель целевой формой
+                e.preventDefault();
+
+                const confirmationMessage = e.target.getAttribute('data-confirmation-message');
+                if (confirmationMessage) {
+                    modalBodyMessage.textContent = confirmationMessage;
+                    formToSubmit = e.target; // Сохраняем DOM-элемент формы
+
+                    const modalInstance = new bootstrap.Modal(modal);
+                    modalInstance.show();
+                } else {
+                    // Если data-confirmation-message нет, отправляем форму без подтверждения
+                    e.target.submit(); // Отправляем исходную форму
+                }
+            }
+        });
+
+        // Обработчик для кнопки "Подтвердить"
+        confirmBtn.addEventListener('click', function() {
+            if (formToSubmit) {
+                formToSubmit.submit();
+            }
+            const modalInstance = bootstrap.Modal.getInstance(modal);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        });
+
+        // Очистка
+        modal.addEventListener('hidden.bs.modal', function () {
+            formToSubmit = null;
+        });
+    })(); // IIFE закрыта
+
 });

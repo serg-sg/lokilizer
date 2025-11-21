@@ -66,20 +66,40 @@ $this->layout('project_layout', ['request' => $request, 'title' => 'Users']) ?>
     <?php foreach ($users as $userRole): ?>
         <tr>
             <td>
-                <a class="btn btn-outline-primary" href="<?= $route("users/{$userRole->user->id()}") ?>">⚙️</a>
+                <?php $user = $userRole->getUser(); ?>
+                <?php if ($user): ?>
+                    <a class="btn btn-outline-primary" href="<?= $route("users/{$user->id()}") ?>">⚙️</a>
+                <?php else: ?>
+                    <!-- ВАЖНО: Используем id из Reference -->
+                    <a class="btn btn-outline-primary" href="<?= $route("users/{$userRole->user->id()->get()}") ?>">⚙️</a>
+                <?php endif; ?>
             </td>
             <th scope="row">
-                <?= $this->e($userRole->getUser()->getName()) ?>
-                <br>
-                <span class="text-secondary fw-normal">
-                    <?= $this->e($userRole->getUser()->getEmail()) ?>
-                </span>
+                <?php $user = $userRole->getUser(); ?>
+                <?php if ($user): ?>
+                    <?= $this->e($user->getName()) ?>
+                    <br>
+                    <span class="text-secondary fw-normal">
+                        <?= $this->e($user->getEmail()) ?>
+                    </span>
+                <?php else: ?>
+                    <em>Deleted User</em> <!-- Отображаем специальное сообщение -->
+                    <br>
+                    <span class="text-secondary fw-normal">
+                        ID: <?=$this->e($userRole->user->id()->get())?> <!-- Показываем ID, если имя/емейл недоступны -->
+                    </span>
+                <?php endif; ?>
             </th>
             <td>
                 <?= $this->e($userRole->role->name) ?>
             </td>
             <?php foreach ($languages as $language): ?>
-                <td><?= ($userRole->can(Permission::MANAGE_LANGUAGES) || in_array($language, $userRole->languages)) ? '✅' : '' ?></td>
+                <?php $user = $userRole->getUser(); ?>
+                <?php if ($user): ?>
+                    <td><?= ($userRole->can(Permission::MANAGE_LANGUAGES) || in_array($language, $userRole->languages)) ? '✅' : '' ?></td>
+                <?php else: ?>
+                    <td></td> <!-- Оставляем ячейку пустой или ставим значок, если пользователь удалён -->
+                <?php endif; ?>
             <?php endforeach; ?>
         </tr>
     <?php endforeach; ?>

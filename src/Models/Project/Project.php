@@ -124,6 +124,19 @@ class Project implements ModelInterface, ModelBeforeCommitEventInterface
         );
     }
 
+    // --- Удаление пользователя по ID Reference ---
+    public function removeUserById(string $userId): bool // Возвращает true, если пользователь был найден и удалён
+    {
+        $initialCount = count($this->users);
+        $this->users = array_filter(
+            $this->users,
+            fn(UserRole $userRole) => !$userRole->user->id()->isEqual($userId) // Сравниваем ID Reference с переданным ID
+        );
+        $finalCount = count($this->users);
+
+        return $initialCount !== $finalCount; // true, если элемент был удалён
+    }
+
     public function getPrimaryLanguage(): LanguageAlpha2
     {
         return $this->primaryLanguage;
