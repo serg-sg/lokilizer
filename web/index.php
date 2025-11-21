@@ -38,6 +38,7 @@ use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\File\UploadAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\ProgressAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Project\ProjectSettingsAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Project\ProjectListAction;
+use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Project\ProjectDeleteAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Auth\LoginAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Tools\LoosedPlaceholdersAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Tools\PluralsAction;
@@ -94,6 +95,7 @@ $app->group('', function (RouteCollectorProxy $group) use ($container) {
             $group->map(['GET', 'POST'], '/{id}', UserRoleUpdateAction::class);
         });
         $group->map(['GET', 'POST'], '/settings', ProjectSettingsAction::class);
+        $group->post('/delete', ProjectDeleteAction::class);
         $group->map(['GET', 'POST'], '/upload', UploadAction::class);
         $group->map(['GET', 'POST'], '/download', DownloadAction::class);
         $group->group('/glossary', function (RouteCollectorProxy $group) use ($container) {
