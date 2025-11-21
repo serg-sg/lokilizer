@@ -117,6 +117,13 @@ $update = isset($update) && boolval($update);
             </select>
         </div>
 
+        <div class="mb-3 form-check">
+            <input class="form-check-input" type="checkbox" id="symbolValidationEnabled" name="symbolValidationEnabled" value="1" <?= $form['symbolValidationEnabled'] ? 'checked' : '' ?>>
+            <label class="form-check-label" for="symbolValidationEnabled">
+                Enable symbol validation (e.g. ?, !, [, ], (, ), ., ;, :, = )
+            </label>
+        </div>
+
         <button type="submit" class="btn btn-primary mt-3"><?=$this->e($button)?></button>
     </div>
 </form>
