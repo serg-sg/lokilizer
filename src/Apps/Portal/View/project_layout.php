@@ -71,7 +71,7 @@ $menu = [
     <nav class="navbar navbar-expand-md bg-body-tertiary mb-3">
         <div class="container">
             <a class="navbar-brand" href="<?= $route('') ?>">
-                <img src="/logo_mini.png" alt="<?= $this->e($_ENV['PROJECT_NAME']) ?>" height="35">
+                <img src="/logo_mini.png" alt="<?= $this->e($_ENV['PROJECT_NAME']) ?>" height="24">
                 <?= $this->e($project->getName()) ?>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-layout">

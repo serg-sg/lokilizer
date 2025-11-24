@@ -105,10 +105,100 @@ $filter = function ($column) use ($params, $renderAttrs) {
         <input type="hidden" name="_sortDirection" value="<?= $this->e($params['_sortDirection']) ?>">
         <input type="hidden" name="_page" value="<?= $this->e($params['_page']) ?>">
         <input type="hidden" name="_pageSize" value="<?= $this->e($params['_pageSize']) ?>">
-        <div class="row">
-            <?php foreach ($columns as $columnKey => $column): ?>
-                <div class="col-lg-2 col-md-3 col-sm-6 col-xs-12 mb-2">
 
+        <!-- Основной ряд фильтров (все кроме Value и Comment) -->
+        <div class="row g-0">
+            <?php
+            $mainColumns = [];
+            foreach ($columns as $columnKey => $column) {
+                if ($columnKey !== 'value' && $columnKey !== 'comment') {
+                    $mainColumns[] = ['key' => $columnKey, 'data' => $column];
+                }
+            }
+
+            // Делим на две строки по 5 элементов
+            $firstRow = array_slice($mainColumns, 0, 5);
+            $secondRow = array_slice($mainColumns, 5, 5);
+            ?>
+
+            <!-- Первая строка -->
+            <div class="row g-0 justify-content-between">
+                <?php foreach ($firstRow as $item): ?>
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-xs-12">
+                        <?php
+                        $columnKey = $item['key'];
+                        $column = $item['data'];
+                        ?>
+                        <?php if ($columnKey === $params['_sortBy']): ?>
+                            <a
+                                    class="text-decoration-none"
+                                    href="<?= $withParams(['_sortBy' => $columnKey, '_sortDirection' => $params['_sortDirection'] === Sorting::SORT_DESC ? Sorting::SORT_ASC : Sorting::SORT_DESC]) ?>">
+                                <?= $this->e($column['header']) ?>
+                                <?= $params['_sortBy'] === $columnKey && $params['_sortDirection'] === Sorting::SORT_ASC ? '🔼' : '' ?>
+                                <?= $params['_sortBy'] === $columnKey && $params['_sortDirection'] === Sorting::SORT_DESC ? '🔽' : '' ?>
+                            </a>
+                        <?php endif ?>
+                        <?php if ($column['sortable'] && $columnKey !== $params['_sortBy']): ?>
+                            <a
+                                    class="text-decoration-none"
+                                    href="<?= $withParams(['_sortBy' => $columnKey, '_sortDirection' => Sorting::SORT_DESC]) ?>">
+                                <?= $this->e($column['header']) ?>
+                            </a>
+                        <?php endif ?>
+
+                        <?php if (!$column['sortable']): ?>
+                            <?= $this->e($column['header']) ?>
+                        <?php endif ?>
+
+                        <?= $filter($column) ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Вторая строка -->
+            <div class="row g-0 justify-content-between">
+                <?php foreach ($secondRow as $item): ?>
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-xs-12">
+                        <?php
+                        $columnKey = $item['key'];
+                        $column = $item['data'];
+                        ?>
+                        <?php if ($columnKey === $params['_sortBy']): ?>
+                            <a
+                                    class="text-decoration-none"
+                                    href="<?= $withParams(['_sortBy' => $columnKey, '_sortDirection' => $params['_sortDirection'] === Sorting::SORT_DESC ? Sorting::SORT_ASC : Sorting::SORT_DESC]) ?>">
+                                <?= $this->e($column['header']) ?>
+                                <?= $params['_sortBy'] === $columnKey && $params['_sortDirection'] === Sorting::SORT_ASC ? '🔼' : '' ?>
+                                <?= $params['_sortBy'] === $columnKey && $params['_sortDirection'] === Sorting::SORT_DESC ? '🔽' : '' ?>
+                            </a>
+                        <?php endif ?>
+                        <?php if ($column['sortable'] && $columnKey !== $params['_sortBy']): ?>
+                            <a
+                                    class="text-decoration-none"
+                                    href="<?= $withParams(['_sortBy' => $columnKey, '_sortDirection' => Sorting::SORT_DESC]) ?>">
+                                <?= $this->e($column['header']) ?>
+                            </a>
+                        <?php endif ?>
+
+                        <?php if (!$column['sortable']): ?>
+                            <?= $this->e($column['header']) ?>
+                        <?php endif ?>
+
+                        <?= $filter($column) ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <!-- Фильтры Value и Comment в отдельных строках -->
+        <?php
+        // Отрисовываем Value
+        if (isset($columns['value'])):
+            $column = $columns['value'];
+            $columnKey = 'value';
+        ?>
+            <div class="row g-0">
+                <div class="col-12">
                     <?php if ($columnKey === $params['_sortBy']): ?>
                         <a
                                 class="text-decoration-none"
@@ -132,8 +222,42 @@ $filter = function ($column) use ($params, $renderAttrs) {
 
                     <?= $filter($column) ?>
                 </div>
-            <?php endforeach; ?>
-        </div>
+            </div>
+        <?php endif; ?>
+
+        <?php
+        // Отрисовываем Comment
+        if (isset($columns['comment'])):
+            $column = $columns['comment'];
+            $columnKey = 'comment';
+        ?>
+            <div class="row g-0">
+                <div class="col-12">
+                    <?php if ($columnKey === $params['_sortBy']): ?>
+                        <a
+                                class="text-decoration-none"
+                                href="<?= $withParams(['_sortBy' => $columnKey, '_sortDirection' => $params['_sortDirection'] === Sorting::SORT_DESC ? Sorting::SORT_ASC : Sorting::SORT_DESC]) ?>">
+                            <?= $this->e($column['header']) ?>
+                            <?= $params['_sortBy'] === $columnKey && $params['_sortDirection'] === Sorting::SORT_ASC ? '🔼' : '' ?>
+                            <?= $params['_sortBy'] === $columnKey && $params['_sortDirection'] === Sorting::SORT_DESC ? '🔽' : '' ?>
+                        </a>
+                    <?php endif ?>
+                    <?php if ($column['sortable'] && $columnKey !== $params['_sortBy']): ?>
+                        <a
+                                class="text-decoration-none"
+                                href="<?= $withParams(['_sortBy' => $columnKey, '_sortDirection' => Sorting::SORT_DESC]) ?>">
+                            <?= $this->e($column['header']) ?>
+                        </a>
+                    <?php endif ?>
+
+                    <?php if (!$column['sortable']): ?>
+                        <?= $this->e($column['header']) ?>
+                    <?php endif ?>
+
+                    <?= $filter($column) ?>
+                </div>
+            </div>
+        <?php endif; ?>
     </form>
 
     <div class="mt-4 mb-3">
