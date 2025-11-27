@@ -16,7 +16,7 @@ use XAKEPEHOK\Lokilizer\Models\Localization\Record;
 
 $this->layout('project_layout', ['request' => $request, 'title' => '🔤 Translations']);
 ?>
-<div class="mb-4"></div>
+
 <?php $this->insert('widgets/_list', [
     ...$fsp,
     'view' => function (Record $record) use ($languages, $distill) {

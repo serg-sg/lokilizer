@@ -100,7 +100,7 @@ $filter = function ($column) use ($params, $renderAttrs) {
 ?>
 
 <div class="w-100">
-    <form id="grid-search" class="container-fluid" action="" method="get">
+    <form id="grid-search" class="w-100" action="" method="get">
         <input type="hidden" name="_sortBy" value="<?= $this->e($params['_sortBy']) ?>">
         <input type="hidden" name="_sortDirection" value="<?= $this->e($params['_sortDirection']) ?>">
         <input type="hidden" name="_page" value="<?= $this->e($params['_page']) ?>">
@@ -115,50 +115,12 @@ $filter = function ($column) use ($params, $renderAttrs) {
                     $mainColumns[] = ['key' => $columnKey, 'data' => $column];
                 }
             }
-
-            // Делим на две строки по 5 элементов
-            $firstRow = array_slice($mainColumns, 0, 5);
-            $secondRow = array_slice($mainColumns, 5, 5);
             ?>
 
-            <!-- Первая строка -->
-            <div class="row g-0 justify-content-between">
-                <?php foreach ($firstRow as $item): ?>
-                    <div class="col-lg-2 col-md-3 col-sm-6 col-xs-12">
-                        <?php
-                        $columnKey = $item['key'];
-                        $column = $item['data'];
-                        ?>
-                        <?php if ($columnKey === $params['_sortBy']): ?>
-                            <a
-                                    class="text-decoration-none"
-                                    href="<?= $withParams(['_sortBy' => $columnKey, '_sortDirection' => $params['_sortDirection'] === Sorting::SORT_DESC ? Sorting::SORT_ASC : Sorting::SORT_DESC]) ?>">
-                                <?= $this->e($column['header']) ?>
-                                <?= $params['_sortBy'] === $columnKey && $params['_sortDirection'] === Sorting::SORT_ASC ? '🔼' : '' ?>
-                                <?= $params['_sortBy'] === $columnKey && $params['_sortDirection'] === Sorting::SORT_DESC ? '🔽' : '' ?>
-                            </a>
-                        <?php endif ?>
-                        <?php if ($column['sortable'] && $columnKey !== $params['_sortBy']): ?>
-                            <a
-                                    class="text-decoration-none"
-                                    href="<?= $withParams(['_sortBy' => $columnKey, '_sortDirection' => Sorting::SORT_DESC]) ?>">
-                                <?= $this->e($column['header']) ?>
-                            </a>
-                        <?php endif ?>
-
-                        <?php if (!$column['sortable']): ?>
-                            <?= $this->e($column['header']) ?>
-                        <?php endif ?>
-
-                        <?= $filter($column) ?>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-
-            <!-- Вторая строка -->
-            <div class="row g-0 justify-content-between">
-                <?php foreach ($secondRow as $item): ?>
-                    <div class="col-lg-2 col-md-3 col-sm-6 col-xs-12">
+            <!-- Основной ряд фильтров (все кроме Value и Comment) -->
+            <div class="grid-container">
+                <?php foreach ($mainColumns as $item): ?>
+                    <div class="grid-item">
                         <?php
                         $columnKey = $item['key'];
                         $column = $item['data'];
@@ -274,3 +236,59 @@ $filter = function ($column) use ($params, $renderAttrs) {
         <?=$this->insert('widgets/_pagination', ['params' => $params, 'count' => $count]); ?>
     </div>
 </div>
+
+<script>
+    function adjustLastRowItems() {
+        // Функция для растягивания ширины элементов в последней строке сетки
+        const container = document.querySelector('.grid-container');
+        if (!container) return;
+
+        const items = Array.from(container.querySelectorAll('.grid-item'));
+        if (items.length === 0) return;
+
+        // Убираем старые классы
+        items.forEach(item => {
+            item.classList.remove('span-full-row');
+            item.style.gridColumn = ''; // Сбрасываем inline стили
+        });
+
+        // Получаем геометрию элементов
+        const firstItemRect = items[0].getBoundingClientRect();
+        let rowSize = 1;
+        for (let i = 1; i < items.length; i++) {
+            const currentRect = items[i].getBoundingClientRect();
+            // Если top текущего элемента больше top первого, значит новая строка
+            if (Math.abs(currentRect.top - firstItemRect.top) > 1) {
+                rowSize = i;
+                break;
+            }
+        }
+
+        // Определяем элементы последней строки
+        const lastRowStartIndex = Math.floor((items.length - 1) / rowSize) * rowSize;
+        const lastRowItems = items.slice(lastRowStartIndex);
+
+        // Если элементов в последней строке меньше, чем в других строках
+        if (lastRowItems.length > 0 && lastRowItems.length < rowSize) {
+            if (lastRowItems.length === 1) {
+                // Один элемент — растягиваем на всю строку
+                lastRowItems[0].classList.add('span-full-row');
+            } else if (lastRowItems.length === 2) {
+                // Два элемента — распределяем по двум колонкам
+                const totalColumns = rowSize;
+                const columnsPerItem = Math.ceil(totalColumns / lastRowItems.length); // Колонок на элемент
+
+                lastRowItems.forEach((item, index) => {
+                    const startCol = index * columnsPerItem + 1;
+                    const endCol = startCol + columnsPerItem;
+                    item.style.gridColumn = `${startCol} / ${endCol}`;
+                });
+            }
+            // Можно добавить условия для 3, 4 элементов, если нужно
+        }
+    }
+
+    // Вызов при загрузке и при изменении размера окна
+    document.addEventListener('DOMContentLoaded', adjustLastRowItems);
+    window.addEventListener('resize', adjustLastRowItems);
+</script>

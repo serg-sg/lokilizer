@@ -68,7 +68,7 @@ $menu = [
 ]
 ?>
 <div style="height: 100svh;">
-    <nav class="navbar navbar-expand-md bg-body-tertiary mb-3">
+    <nav class="navbar navbar-expand-md bg-body-tertiary mb-3 fixed-top">
         <div class="container">
             <a class="navbar-brand" href="<?= $route('') ?>">
                 <img src="/logo_mini.png" alt="<?= $this->e($_ENV['PROJECT_NAME']) ?>" height="24">
@@ -92,7 +92,7 @@ $menu = [
                 ]]) ?>
             </div>
     </nav>
-    <div class="container px-3 pb-5 position-relative overflow-x-auto" style="min-height: 80svh">
+    <div class="container px-3 pb-4 pt-5 position-relative overflow-x-auto" style="min-height: 80svh">
         <?php if (!empty($_GET['_alert'])): ?>
             <div class="alert alert-<?= $_GET['_alert_type'] ?? 'info' ?>">
                 <?= $this->e($_GET['_alert']) ?>
@@ -129,7 +129,7 @@ $menu = [
             </div>
         <?php endif; ?>
 
-        <div class="d-flex mb-3">
+        <div class="d-flex mb-2 align-items-center mt-4">
             <h1 class="<?= is_null($subtitle) ? 'w-100' : 'w-75' ?>"><?= $this->e($title) ?></h1>
             <?php if ($subtitle): ?>
                 <div class="w-25 text-secondary text-end"><?= $this->e($subtitle) ?></div>

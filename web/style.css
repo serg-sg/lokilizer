@@ -43,3 +43,42 @@ textarea.record-textarea.autosize {
     border-radius: 3px;
     font-weight: bold;
 }
+
+/* Основной контейнер сетки */
+.grid-container {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(5, 1fr); /* 5 колонок равной ширины */
+}
+
+/* Адаптивность */
+@media (max-width: 1199px) {
+  .grid-container {
+    grid-template-columns: repeat(4, 1fr); /* 4 колонки */
+  }
+}
+
+@media (max-width: 991px) {
+  .grid-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 колонки */
+  }
+}
+
+@media (max-width: 767px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 колонки */
+  }
+}
+
+@media (max-width: 575px) {
+  .grid-container {
+    grid-template-columns: 1fr; /* 1 колонка (столбец) */
+  }
+}
+
+/* Класс для элемента, который должен занять всю строку */
+.grid-item.span-full-row {
+    grid-column-start: 1; /* Прижимаем к левому краю */
+    grid-column-end: -1;   /* Растягиваем до конца строки */
+    width: 100%;           /* Убедимся, что элемент занимает всю ширину */
+}
