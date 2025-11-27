@@ -13,8 +13,8 @@ cp .env.traefik .env
 nano .env
 
 # Create required directories and set correct ownership (use your current UID/GID, usually 1000:1000)
-mkdir -p vendor volumes/mongo/data volumes/mongo/configdb volumes/redis runtime
-sudo chown -R 1000:1000 vendor volumes runtime
+mkdir -p vendor runtime
+sudo chown -R 1000:1000 vendor runtime
 
 # Create the migration state file if it doesn't exist
 if [ ! -f migrations/_applied.json ]; then
@@ -38,8 +38,8 @@ cp .env.prod .env
 nano .env
 
 # Create required directories and set correct ownership (use your current UID/GID, usually 1000:1000)
-mkdir -p vendor volumes/mongo/data volumes/mongo/configdb volumes/redis runtime
-sudo chown -R 1000:1000 vendor volumes runtime
+mkdir -p vendor runtime
+sudo chown -R 1000:1000 vendor runtime
 
 # Create the migration state file if it doesn't exist
 if [ ! -f migrations/_applied.json ]; then
