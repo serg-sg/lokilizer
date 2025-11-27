@@ -50,7 +50,7 @@ $this->layout('project_layout', ['request' => $request, 'title' => 'Getting star
     <li>
         <span class="badge text-bg-info">Add new language</span>
         <a href="<?=$route('upload')?>">Upload</a> translation in new language or add new language in
-        <a href="<?=$route('glossary/common')?>">glossary</a>. After that, you can run
+        <a href="<?=$route('glossary/primary')?>">glossary</a>. After that, you can run
         <a href="<?=$route('batch/translate')?>">AI translate</a> in <code>🏭 Batch -> 🔤 AI Translate</code>
     </li>
 </ol>
