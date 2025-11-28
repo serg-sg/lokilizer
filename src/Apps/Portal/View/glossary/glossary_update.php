@@ -165,7 +165,7 @@ $this->layout('project_layout', ['request' => $request, 'title' => $title, 'subt
             <div class="col-12">
                 <label for="summary" class="form-label">Summary</label>
                 <textarea class="form-control textarea-autosize" id="summary" rows="3"
-                          name="summary"><?= $this->e($form['summary']) ?></textarea>
+                    name="summary" style="resize: vertical;"><?= $this->e($form['summary']) ?></textarea>
             </div>
         </div>
         <div class="row mt-3">
@@ -189,12 +189,37 @@ $this->layout('project_layout', ['request' => $request, 'title' => $title, 'subt
         </div>
     </form>
     <?php if (Current::can(Permission::MANAGE_GLOSSARY)): ?>
+        <!-- Новый row для Export/Import JSON -->
+        <div class="row">
+            <!-- Левый столбец: Export/Import JSON -->
+            <div class="col-6">
+                <!-- Форма загрузки JSON -->
+                <form method="post" enctype="multipart/form-data" action="<?= $route("glossary/{$glossary->id()}/import") ?>" class="d-inline-block me-2 ms-0" id="importJsonForm">
+                    <input type="file" name="file" accept=".json" class="d-none" id="uploadFileInput" onchange="this.form.submit();">
+                    <label for="uploadFileInput" class="btn btn-outline-secondary" title="Import glossary from JSON">
+                        📤 Import JSON
+                    </label>
+                </form>
+            <!-- Кнопка выгрузки JSON -->
+                <form method="post" action="<?= $route("glossary/{$glossary->id()}/export") ?>" class="d-inline-block me-2 ms-0">
+                    <button type="submit" class="btn btn-outline-secondary" title="Export glossary as JSON">
+                        📥 Export JSON
+                    </button>
+                </form>
+            </div>
+            <!-- Правый столбец: пустой, чтобы занять место и сохранить структуру -->
+            <div class="col-6 text-end">
+                <!-- Здесь ничего не нужно, но мы оставляем его для баланса -->
+            </div>
+        </div>
+
+        <!-- Существующий row для основных действий -->
         <div class="row mt-3">
             <div class="col-6">
                 <button form="glossaryForm" class="btn btn-primary" type="submit">Save changes</button>
                 <?php if ($glossary instanceof SpecialGlossary && Current::can(Permission::MANAGE_GLOSSARY)): ?>
-                    <form method="post" class="d-inline-block submit-confirmation"
-                          data-confirmation="Are you sure you want to DELETE this glossary?">
+                    <form method="post" class="d-inline-block submit-confirmation ms-2"
+                        data-confirmation="Are you sure you want to DELETE this glossary?">
                         <button class="btn btn-danger" name="delete" value="delete" type="submit">Delete glossary
                         </button>
                     </form>
@@ -210,7 +235,7 @@ $this->layout('project_layout', ['request' => $request, 'title' => $title, 'subt
                             <?php foreach (Current::getLLMEndpoints() as $llm): ?>
                                 <li>
                                     <a class="text-decoration-none dropdown-item"
-                                       href="<?= $route("glossary/{$glossary->id()}") ?>?translate=<?=$this->e($llm->id())?>">
+                                    href="<?= $route("glossary/{$glossary->id()}") ?>?translate=<?=$this->e($llm->id())?>">
                                         <?=$this->e($llm->getName())?>
                                     </a>
                                 </li>
@@ -221,15 +246,15 @@ $this->layout('project_layout', ['request' => $request, 'title' => $title, 'subt
                 <?php if ($glossary instanceof SpecialGlossary && $glossary->id()->isAssigned()): ?>
                     <?= $this->insert('widgets/_glossary_build_button', ['key' => $glossary->getKeyPrefix(), 'class' => 'btn-outline-primary']) ?>
                 <?php endif; ?>
-                <button id="addRow" class="btn btn-success" type="submit">Add row</button>
+                <button id="addRow" class="btn btn-success ms-2" type="submit">Add row</button>
                 <?php if (Current::can(Permission::MANAGE_LANGUAGES) && $glossary instanceof PrimaryGlossary): ?>
-                    <div class="dropup d-inline-block">
+                    <div class="dropup d-inline-block ms-2">
                         <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Add language
                         </button>
                         <!-- Добавлен id для целевого CSS -->
                         <div id="language-dropdown-menu" class="dropdown-menu my-3"
-                             style="max-width: 250px; max-height: none; height: auto; min-width: 250px; overflow-y: visible; overflow-x: visible;">
+                            style="max-width: 250px; max-height: none; height: auto; min-width: 250px; overflow-y: visible; overflow-x: visible;">
                             <!-- Поле ввода остается видимым -->
                             <div class="px-3 py-2 border-bottom">
                                 <input type="text" id="languageFilterInput" class="form-control form-control-sm" placeholder="Filter languages..." style="font-size: 0.875rem;" autocomplete="off">

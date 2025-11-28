@@ -18,6 +18,8 @@ use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Glossary\GlossaryBuildAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Glossary\GlossaryListAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Glossary\GlossaryUpdateAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Glossary\GlossaryUsageAction;
+use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Glossary\GlossaryExportAction;
+use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Glossary\GlossaryImportAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\LLM\LLMListAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\LLM\LLMUpdateAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Profile\PasswordChangeAction;
@@ -25,7 +27,6 @@ use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Profile\ProfileChangeAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Backup\BackupMakeAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Project\ProjectCreateAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Project\ProjectInviteAction;
-
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\File\DownloadAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Record\GlossaryCheckAction;
 use XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Record\LLMAction;
@@ -78,7 +79,6 @@ $app->map(['GET', 'POST'], '/logout', LogoutAction::class);
 
 // --- Маршрут для приглашения неавторизованных пользователей (до AuthMiddleware) ---
 $app->map(['GET', 'POST'], '/project/{projectId}/invite/{inviteId}', ProjectInviteAction::class);
-//$app->map(['GET', 'POST'], '/project/{projectId}/invite/{inviteId}', 'XAKEPEHOK\Lokilizer\Apps\Portal\Actions\Project\ProjectInviteAction');
 
 $app->group('', function (RouteCollectorProxy $group) use ($container) {
     $group->get('/[project[/]]', ProjectListAction::class);
@@ -87,7 +87,6 @@ $app->group('', function (RouteCollectorProxy $group) use ($container) {
         $group->map(['GET', 'POST'], '/password', PasswordChangeAction::class);
     });
     $group->map(['GET', 'POST'], '/project/create', ProjectCreateAction::class);
-    //$group->map(['GET', 'POST'], '/project/{projectId}/invite/{inviteId}', ProjectInviteAction::class);
     $group->group('/project/{projectId}', function (RouteCollectorProxy $group) use ($container) {
 
         if ($_ENV['APP_ENV'] === 'dev') {
@@ -105,6 +104,8 @@ $app->group('', function (RouteCollectorProxy $group) use ($container) {
         $group->map(['GET', 'POST'], '/download', DownloadAction::class);
         $group->group('/glossary', function (RouteCollectorProxy $group) use ($container) {
             $group->post('/_build', GlossaryBuildAction::class);
+            $group->post('/{id}/import', GlossaryImportAction::class)->setName('glossary.import');
+            $group->post('/{id}/export', GlossaryExportAction::class)->setName('glossary.export');
             $group->get('/usage', GlossaryUsageAction::class);
             $group->map(['GET', 'POST'],'/list', GlossaryListAction::class);
             $group->map(['GET', 'POST'],'[/{id}]', GlossaryUpdateAction::class);
