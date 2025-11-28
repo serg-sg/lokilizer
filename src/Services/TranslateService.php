@@ -217,24 +217,30 @@ class TranslateService extends LLMRecordService
         $items = $this->glossaryService->distillItems($glossary, $record);
         if (!empty($items)) {
             $project = Current::getProject();
+            $primaryLang = $project->getPrimaryLanguage();
+            $secondaryLang = $project->getSecondaryLanguage();
+
+            // Фильтруем null значения
+            $languageArgs = array_filter([$primaryLang, $secondaryLang], fn($lang) => $lang !== null);
+
             $strings = array_map(
-                function (GlossaryItem $item) use ($project, $language) {
-                    $text = $item->toString($project->getPrimaryLanguage(), $project->getSecondaryLanguage());
+                function (GlossaryItem $item) use ($project, $language, $languageArgs) {
+                    $text = $item->toString(...$languageArgs); // Передаем только ненулевые языки
 
                     if ($phrase = $item->getByLanguage($language)) {
-                        $text.= "<TranslationDictionary>";
-                        $text.= "Translate phrase \"{$item->primary->phrase}\" to \"{$language->name}\" as \"{$phrase->phrase}\". ";
+                        $text .= "<TranslationDictionary>";
+                        $text .= "Translate phrase \"{$item->primary->phrase}\" to \"{$language->name}\" as \"{$phrase->phrase}\". ";
                         if ($project->getSecondaryLanguage() && $item->getByLanguage($project->getSecondaryLanguage())) {
-                            $text.= "Translate phrase \"{$item->getByLanguage($project->getSecondaryLanguage())->phrase}\" to \"{$language->name}\" as \"{$phrase->phrase}\". Adjust the capitalization of the terms to fit naturally within the surrounding text. ";
+                            $text .= "Translate phrase \"{$item->getByLanguage($project->getSecondaryLanguage())->phrase}\" to \"{$language->name}\" as \"{$phrase->phrase}\". Adjust the capitalization of the terms to fit naturally within the surrounding text. ";
                         }
-                        $text.="</TranslationDictionary>";
+                        $text .= "</TranslationDictionary>";
                     }
 
                     return $text;
                 },
                 $items
             );
-            $summary.= "\n\n## " . implode("\n\n## ", $strings);
+            $summary .= "\n\n## " . implode("\n\n## ", $strings);
         }
 
         return $summary;
