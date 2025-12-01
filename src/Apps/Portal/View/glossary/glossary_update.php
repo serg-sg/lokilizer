@@ -164,8 +164,8 @@ $this->layout('project_layout', ['request' => $request, 'title' => $title, 'subt
         <div class="row">
             <div class="col-12">
                 <label for="summary" class="form-label">Summary</label>
-                <textarea class="form-control textarea-autosize" id="summary" rows="3"
-                    name="summary" style="resize: vertical;"><?= $this->e($form['summary']) ?></textarea>
+                <textarea class="form-control" id="summary" rows="3"
+                    name="summary" style="resize: vertical; overflow-y: auto;"><?= $this->e($form['summary']) ?></textarea>
             </div>
         </div>
         <div class="row mt-3">
